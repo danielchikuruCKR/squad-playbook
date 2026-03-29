@@ -947,19 +947,23 @@ function initCanvas(canvasId,positions){
 let currentTab='5v5';
 let currentPlayId=null;
 let animRunning=false;
+let currentAnimKey=null;
+let currentPositions=null;
 
 // ── TOGGLE ANIMATION ──
-window.toggleAnim=function(animKey,positions){
+window.toggleAnim=function(){
   const canvas=document.getElementById('cc');
   const btn=document.getElementById('ab');
-  if(!canvas)return;
+  if(!canvas||!currentAnimKey)return;
   if(!animRunning){
-    animRunning=true;btn.textContent='⏹ STOP';
-    runAnim(animKey,canvas);
+    animRunning=true;
+    if(btn)btn.textContent='⏹ STOP';
+    runAnim(currentAnimKey,canvas);
   }else{
-    animRunning=false;btn.textContent='▶ ANIMATE';
+    animRunning=false;
+    if(btn)btn.textContent='▶ ANIMATE';
     if(_raf){cancelAnimationFrame(_raf);_raf=null;}
-    drawStatic(positions,canvas);
+    if(currentPositions)drawStatic(currentPositions,canvas);
   }
 };
 
@@ -1005,6 +1009,8 @@ function renderPlay5v5(play){
     </div>`).join('');
   const tipsHTML=play.tips.map(t=>`<li>${t}</li>`).join('');
 
+  currentAnimKey=play.anim;
+  currentPositions=play.pos;
   document.getElementById('content').innerHTML=`<div class="fade-in">
     <div class="play-hdr">
       <div class="play-hdr-left">
@@ -1012,7 +1018,7 @@ function renderPlay5v5(play){
         <h2>${play.name}</h2>
         <div class="pdesc">${play.desc}</div>
       </div>
-      <button class="animBtn" id="ab" onclick="toggleAnim('${play.anim}',${JSON.stringify(play.pos)})">▶ ANIMATE</button>
+      <button class="animBtn" id="ab" onclick="toggleAnim()">▶ ANIMATE</button>
     </div>
     <div class="roles">${rolesHTML}</div>
     <div class="court-wrap">
@@ -1043,6 +1049,8 @@ function renderPlayAI(play){
       <div class="ac-play">📋 BEST PLAY: ${s.play}</div>
     </div>`).join('');
 
+  currentAnimKey=play.anim;
+  currentPositions=play.pos;
   document.getElementById('content').innerHTML=`<div class="fade-in">
     <div class="play-hdr">
       <div class="play-hdr-left">
@@ -1051,7 +1059,7 @@ function renderPlayAI(play){
         <div class="pdesc">${play.desc}</div>
         <div class="ai-badge">🤖 ${play.aiBadge}</div>
       </div>
-      <button class="animBtn" id="ab" onclick="toggleAnim('${play.anim}',${JSON.stringify(play.pos)})">▶ ANIMATE</button>
+      <button class="animBtn" id="ab" onclick="toggleAnim()">▶ ANIMATE</button>
     </div>
     <div class="roles">${rolesHTML}</div>
     <div class="court-wrap">
@@ -1065,6 +1073,7 @@ function renderPlayAI(play){
     <div class="ai-scenario-grid">${strategiesHTML}</div>
   </div>`;
   animRunning=false;
+  currentPositions=play.pos;
   initCanvas('cc',play.pos);
 }
 
