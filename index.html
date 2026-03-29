@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Daniel's Squad Playbook v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --gold:#FFB700; --court:#C88B3A; --court-dark:#8B5E1A;
+  --bg:#08080E; --panel:#101018; --panel2:#161622;
+  --border:#1C1C28; --text:#F0EDE6; --muted:#6E6E82;
+  --red:#FF4D4D; --green:#39D98A; --blue:#4D9EFF; --purple:#CC88FF;
+  --ai:#FF6B35;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* ── TOP HEADER ── */
+header{
+  background:linear-gradient(135deg,#0b0b14,#181028);
+  border-bottom:2px solid var(--gold);
+  padding:22px 28px 18px;
+  display:flex; align-items:flex-end; gap:18px; flex-wrap:wrap;
+  position:relative; overflow:hidden;
+}
+header::after{
+  content:''; position:absolute; top:-50px;right:-50px;
+  width:220px;height:220px;
+  background:radial-gradient(circle,rgba(255,183,0,.10) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hbadge{
+  background:var(--gold);color:#000;font-family:'Bebas Neue',sans-serif;
+  font-size:10px;letter-spacing:2px;padding:3px 9px;border-radius:2px;
+  display:inline-block;margin-bottom:5px;
+}
+header h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,5vw,44px);letter-spacing:3px;line-height:1;}
+header h1 span{color:var(--gold);}
+header .sub{font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:.4px;}
+
+/* ── STAT BAR ── */
+.statbar{
+  display:flex;border-bottom:1px solid var(--border);
+  background:#0c0c14;overflow-x:auto;flex-shrink:0;
+}
+.si{
+  padding:14px 22px;border-right:1px solid var(--border);
+  text-align:center;min-width:100px;flex-shrink:0;
+}
+.sv{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--gold);line-height:1;}
+.sl{font-size:9px;color:var(--muted);letter-spacing:1.4px;text-transform:uppercase;margin-top:2px;}
+
+/* ── TAB BAR ── */
+.tabbar{
+  display:flex;gap:2px;background:var(--bg);
+  border-bottom:1px solid var(--border);
+  padding:0 16px;overflow-x:auto;
+}
+.tabbar button{
+  padding:12px 18px;font-family:'Bebas Neue',sans-serif;font-size:14px;
+  letter-spacing:1.5px;background:transparent;border:none;
+  color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;
+  white-space:nowrap;transition:all .2s;
+}
+.tabbar button:hover{color:var(--text);}
+.tabbar button.active{color:var(--gold);border-bottom-color:var(--gold);}
+.tabbar button .pill{
+  font-size:9px;padding:1px 6px;border-radius:8px;margin-left:6px;
+  font-family:'DM Sans',sans-serif;font-weight:600;letter-spacing:.5px;
+  vertical-align:middle;
+}
+.pill-5v5{background:rgba(57,217,138,.15);color:var(--green);}
+.pill-ai{background:rgba(255,107,53,.18);color:var(--ai);}
+.pill-rules{background:rgba(255,183,0,.13);color:var(--gold);}
+
+/* ── MAIN LAYOUT ── */
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 175px);}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  background:var(--panel);border-right:1px solid var(--border);
+  overflow-y:auto;
+}
+.sgroup{padding:14px 0 4px;}
+.sgroup-title{
+  font-size:9px;letter-spacing:2px;color:var(--muted);
+  text-transform:uppercase;padding:0 16px 8px;
+}
+.pbtn{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 16px;cursor:pointer;
+  border-left:3px solid transparent;
+  background:transparent;width:100%;text-align:left;
+  border-top:none;border-right:none;border-bottom:none;
+  color:var(--text);transition:all .18s;
+}
+.pbtn:hover{background:rgba(255,183,0,.05);}
+.pbtn.active{border-left-color:var(--gold);background:rgba(255,183,0,.07);}
+.pbtn .pnum{
+  font-family:'Bebas Neue',sans-serif;font-size:18px;
+  color:var(--muted);width:24px;line-height:1;flex-shrink:0;
+}
+.pbtn.active .pnum,.pbtn:hover .pnum{color:var(--gold);}
+.pbtn .pi{flex:1;}
+.pbtn .pn{font-size:12px;font-weight:600;}
+.pbtn .pt{font-size:10px;color:var(--muted);margin-top:1px;}
+.spill{
+  font-size:8px;padding:2px 6px;border-radius:8px;
+  font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  flex-shrink:0;
+}
+.sp-5v5{background:rgba(57,217,138,.12);color:var(--green);}
+.sp-ai{background:rgba(255,107,53,.15);color:var(--ai);}
+.sdiv{height:1px;background:var(--border);margin:6px 14px;}
+
+/* ── CONTENT ── */
+.content{padding:28px 28px 40px;overflow-y:auto;}
+
+/* ── PLAY HEADER ── */
+.play-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;gap:16px;flex-wrap:wrap;}
+.play-hdr-left .ptag{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;}
+.play-hdr-left h2{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;line-height:1;}
+.play-hdr-left .pdesc{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.6;max-width:480px;}
+.ai-badge{
+  background:rgba(255,107,53,.15);border:1px solid rgba(255,107,53,.35);
+  color:var(--ai);font-size:10px;font-weight:700;letter-spacing:1.5px;
+  padding:4px 10px;border-radius:3px;text-transform:uppercase;
+  display:inline-block;margin-top:6px;
+}
+.animBtn{
+  background:var(--gold);color:#000;border:none;
+  padding:10px 20px;font-family:'Bebas Neue',sans-serif;
+  font-size:15px;letter-spacing:2px;cursor:pointer;
+  border-radius:3px;transition:all .18s;white-space:nowrap;flex-shrink:0;
+}
+.animBtn:hover{background:#ffc933;transform:translateY(-1px);}
+
+/* ── ROLES BAR ── */
+.roles{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.rchip{
+  display:flex;align-items:center;gap:7px;
+  background:var(--panel2);border:1px solid var(--border);
+  border-radius:16px;padding:6px 12px;font-size:11px;
+}
+.rdot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.rname{font-weight:600;}
+.rnote{color:var(--muted);font-size:10px;margin-left:2px;}
+/* AI slot highlight */
+.rchip.ai-slot{
+  border-color:rgba(255,107,53,.4);
+  background:rgba(255,107,53,.07);
+}
+.rchip.ai-slot .rdot{box-shadow:0 0 6px var(--ai);}
+
+/* ── COURT ── */
+.court-wrap{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:6px;padding:16px;margin-bottom:22px;
+}
+.clabel{
+  font-size:9px;letter-spacing:2px;color:var(--muted);
+  text-transform:uppercase;margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;
+}
+.clabel::after{content:'';flex:1;height:1px;background:var(--border);}
+canvas{display:block;width:100%;max-width:600px;margin:0 auto;border-radius:3px;}
+
+/* ── AI WARNING BOX ── */
+.ai-warn{
+  background:rgba(255,107,53,.06);
+  border:1px solid rgba(255,107,53,.25);
+  border-radius:6px;padding:16px;margin-bottom:20px;
+}
+.ai-warn-title{
+  font-family:'Bebas Neue',sans-serif;font-size:17px;
+  letter-spacing:1px;color:var(--ai);margin-bottom:10px;
+}
+.ai-warn ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.ai-warn li{font-size:12px;color:var(--text);display:flex;gap:8px;line-height:1.55;}
+.ai-warn li::before{content:'⚠';flex-shrink:0;}
+
+/* ── STEPS ── */
+.steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:22px;}
+.step{
+  background:var(--panel2);border:1px solid var(--border);
+  border-radius:5px;padding:14px;
+  border-left:3px solid var(--border);transition:border-color .2s;
+}
+.step.s-pg{border-left-color:var(--blue);}
+.step.s-sh{border-left-color:var(--red);}
+.step.s-hi{border-left-color:var(--gold);}
+.step.s-ai{border-left-color:var(--ai);}
+.step .snum{
+  font-family:'Bebas Neue',sans-serif;font-size:24px;
+  color:var(--border);line-height:1;margin-bottom:3px;
+}
+.step.s-pg .snum{color:var(--blue);}
+.step.s-sh .snum{color:var(--red);}
+.step.s-hi .snum{color:var(--gold);}
+.step.s-ai .snum{color:var(--ai);}
+.step .swho{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.step .sact{font-size:12px;line-height:1.55;}
+
+/* ── TIPS ── */
+.tips{
+  background:rgba(255,183,0,.04);border:1px solid rgba(255,183,0,.18);
+  border-radius:5px;padding:16px;margin-bottom:18px;
+}
+.tips h3{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--gold);margin-bottom:10px;}
+.tips ul{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.tips li{font-size:12px;display:flex;gap:9px;line-height:1.55;}
+.tips li::before{content:'→';color:var(--gold);flex-shrink:0;}
+
+/* ── 4v5 SPECIFIC SECTION ── */
+.ai-scenario-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:24px;}
+.ai-card{
+  background:var(--panel2);border:1px solid var(--border);
+  border-radius:6px;padding:18px;
+  border-top:3px solid var(--ai);
+}
+.ai-card h3{
+  font-family:'Bebas Neue',sans-serif;font-size:18px;
+  letter-spacing:1px;color:var(--ai);margin-bottom:3px;
+}
+.ai-card .ac-sub{font-size:10px;color:var(--muted);margin-bottom:12px;letter-spacing:.5px;}
+.ai-card ul{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.ai-card li{font-size:12px;display:flex;gap:9px;line-height:1.55;}
+.ai-card li::before{content:'▸';color:var(--ai);flex-shrink:0;margin-top:1px;}
+.ai-card li strong{color:var(--text);}
+.ai-card .ac-play{
+  background:rgba(255,107,53,.10);border:1px solid rgba(255,107,53,.2);
+  border-radius:3px;padding:6px 10px;margin-top:12px;
+  font-size:11px;color:var(--ai);font-weight:600;
+}
+
+/* ── RULES PAGE ── */
+.rsec{margin-bottom:28px;}
+.rsec h3{
+  font-family:'Bebas Neue',sans-serif;font-size:20px;
+  letter-spacing:2px;color:var(--gold);margin-bottom:14px;
+  padding-bottom:7px;border-bottom:1px solid var(--border);
+}
+.rlist{display:flex;flex-direction:column;gap:9px;}
+.ritem{
+  background:var(--panel2);border:1px solid var(--border);
+  border-radius:5px;padding:12px 14px;font-size:12px;
+  line-height:1.6;display:flex;gap:11px;align-items:flex-start;
+}
+.ricon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.rtext strong{color:var(--gold);}
+.rtext .rsub{color:var(--muted);font-size:11px;margin-top:2px;}
+
+/* ── MISC ── */
+.fade-in{animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:680px){
+  .layout{grid-template-columns:1fr;}
+  .sidebar{border-right:none;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;padding:8px 0;}
+  .pbtn{border-left:none;border-bottom:3px solid transparent;flex:1;min-width:120px;}
+  .pbtn.active{border-bottom-color:var(--gold);border-left-color:transparent;}
+  .content{padding:18px 14px 32px;}
+  .steps{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="hbadge">NBA 2K26 — SQUAD PLAYBOOK V2</div>
+    <h1>DANIEL'S <span>SYSTEM</span></h1>
+    <div class="sub">5v5 Full Plays · 4v5 AI Scenarios · 15+ AST · Anti-Double Strategy</div>
+  </div>
+</header>
+
+<div class="statbar">
+  <div class="si"><div class="sv">99</div><div class="sl">Pass Acc</div></div>
+  <div class="si"><div class="sv">15+</div><div class="sl">AST Goal</div></div>
+  <div class="si"><div class="sv">11</div><div class="sl">Total Plays</div></div>
+  <div class="si"><div class="sv">5</div><div class="sl">AI Scenarios</div></div>
+  <div class="si"><div class="sv">🤖</div><div class="sl">AI Proof</div></div>
+</div>
+
+<div class="tabbar">
+  <button class="active" onclick="switchTab('5v5',this)">5V5 PLAYS <span class="pill pill-5v5">6</span></button>
+  <button onclick="switchTab('ai',this)">4V5 AI SCENARIOS <span class="pill pill-ai">5</span></button>
+  <button onclick="switchTab('rules',this)">SYSTEM RULES <span class="pill pill-rules">LAW</span></button>
+</div>
+
+<div class="layout">
+  <div class="sidebar" id="sidebar"></div>
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+// ─── PLAYER DEFINITIONS ───
+const DEF = {
+  pg:     {label:'PG', name:'Daniel (You)',      color:'#4D9EFF'},
+  sg:     {label:'SG', name:'Shooting Guard',    color:'#FF4D4D'},
+  sf:     {label:'SF', name:'Small Forward',     color:'#39D98A'},
+  pf:     {label:'PF', name:'Power Forward',     color:'#CC88FF'},
+  c:      {label:'C',  name:'Center',            color:'#FFB700'},
+  ai:     {label:'AI', name:'AI Teammate',       color:'#FF6B35'},
+};
+
+// ─── 5V5 PLAYS ───
+const plays5v5 = [
+{
+  id:'p1', name:'Drop & Pop', tag:'PLAY 01 — SHOOTER FEED',
+  desc:'Classic drive-and-kick. You attack the paint drawing two defenders then kick to your shooter in the corner. The spacing with all 5 players forces the defense to cover the whole court.',
+  roles:[
+    {key:'pg',note:'Drive & kick'},
+    {key:'sg',note:'Strong corner — primary target'},
+    {key:'sf',note:'Weak wing — second option'},
+    {key:'pf',note:'Weak corner — third option'},
+    {key:'c', note:'High ball screen → pop arc'},
+  ],
+  steps:[
+    {who:'ALL TEAMMATES',act:'Spread to 5-out first. SG to strong corner, SF to weak wing, PF to weak corner, C at the top of the arc. Nobody inside the 3-point line.',cls:'s-hi'},
+    {who:'Daniel (PG)',act:'Dribble toward the elbow behind a ball screen from C. Attack the paint hard — if 2 defenders collapse, the kick is automatic.',cls:'s-pg'},
+    {who:'SG (Shooter)',act:'Stay parked in the strong corner. Hands up, knees bent. The MOMENT Daniel\'s feet enter the paint, be ready to catch and fire.',cls:'s-sh'},
+    {who:'C',act:'Set the ball screen then pop to the arc. You\'re the safety valve if the corner is guarded.',cls:'s-hi'},
+    {who:'Daniel (PG)',act:'Count defenders. One comes? Keep going. Two come? Kick to SG corner. Three come (trap)? Skip to PF weak corner — longest kick-out, highest value.',cls:'s-pg'},
+  ],
+  tips:[
+    'With all 5 spread, a double-team on your drive always leaves someone open — you just need to find who.',
+    'SG: if your defender cheats toward Daniel early, cut backdoor immediately. That\'s a layup.',
+    'If PF corner is open, use the skip pass with icon targeting — don\'t risk a cross-court turnover.',
+    '5-out spacing makes this play harder to defend than any 3-man play.',
+  ],
+  anim:'dropPop5',
+  pos:[
+    {key:'pg',x:.50,y:.42},{key:'sg',x:.88,y:.76},{key:'sf',x:.10,y:.70},
+    {key:'pf',x:.12,y:.82},{key:'c', x:.50,y:.30},
+  ],
+},
+{
+  id:'p2', name:'Horns Kick', tag:'PLAY 02 — FAKE DHO CORNER 3',
+  desc:'Classic Horns alignment (C + PF at elbows). You fake the hand-off to freeze the defense while your SG sprints baseline to the corner.',
+  roles:[
+    {key:'pg',note:'DHO fake initiator'},
+    {key:'sg',note:'Baseline cut → corner 3'},
+    {key:'sf',note:'Opposite corner hold'},
+    {key:'pf',note:'Left elbow — screen anchor'},
+    {key:'c', note:'Right elbow — DHO partner'},
+  ],
+  steps:[
+    {who:'C + PF',act:'Line up at both elbows simultaneously. This is your cue to the team that you\'re running Horns. Hold position until Daniel calls for it.',cls:'s-hi'},
+    {who:'SG',act:'Start on the weak-side wing. Walk casually. When Daniel reaches the elbow and extends his hand, SPRINT to the strong-side corner baseline.',cls:'s-sh'},
+    {who:'Daniel (PG)',act:'Dribble toward C on the right elbow like you\'re doing a DHO. Reach your hand out — sell it hard. Your defender AND C\'s defender will freeze.',cls:'s-pg'},
+    {who:'Daniel (PG)',act:'PULL BACK the fake. Pivot immediately and fire the pass to SG sprinting to the corner. Hit them in rhythm — pass to where they\'re going, not where they are.',cls:'s-pg'},
+    {who:'SF + PF',act:'SF stays in weak corner (keeps their man from helping). PF acts as a natural screen in SG\'s path as they cut — a bonus obstacle for their defender.',cls:'s-hi'},
+  ],
+  tips:[
+    'The fake DHO only works when BOTH you and C commit to it visually. Sell it or don\'t run it.',
+    'SG: time your sprint to the moment Daniel\'s hand reaches out. Too early = defender reads it. Too late = you\'re not ready.',
+    'If SG\'s defender fights through the cut, C at the elbow is your easy mid-range or 3.',
+    'This play works even better after you\'ve run one real DHO earlier in the game.',
+  ],
+  anim:'horns5',
+  pos:[
+    {key:'pg',x:.50,y:.44},{key:'sg',x:.15,y:.62},{key:'sf',x:.09,y:.78},
+    {key:'pf',x:.35,y:.30},{key:'c', x:.65,y:.30},
+  ],
+},
+{
+  id:'p3', name:'Spread & Slash', tag:'PLAY 03 — 5-OUT ISO + KICK',
+  desc:'When their PG can\'t guard you, call spread. All 4 teammates go to the arc giving you a true 1v1. If one defender helps, you have an open shooter — always.',
+  roles:[
+    {key:'pg',note:'ISO driver — read help'},
+    {key:'sg',note:'Strong corner — trigger man'},
+    {key:'sf',note:'Weak wing'},
+    {key:'pf',note:'Weak corner'},
+    {key:'c', note:'Top of arc opposite'},
+  ],
+  steps:[
+    {who:'Daniel (PG)',act:'Call "SPREAD" out loud. All 4 teammates go to 5-out positions. You\'re now 1-on-1.',cls:'s-pg'},
+    {who:'ALL 4 TEAMMATES',act:'Do NOT move from your spot unless Daniel drives past you. Freeze. Movement without purpose destroys spacing.',cls:'s-hi'},
+    {who:'Daniel (PG)',act:'Attack your matchup. Be decisive — hesitation kills ISO plays. If they sag off, shoot the 3. If they overplay, blow by.',cls:'s-pg'},
+    {who:'Daniel (PG)',act:'The moment a help defender moves off their man, STOP and fire the pass. Icon pass to the open man. 99 pass accuracy means you hit the pocket every time.',cls:'s-pg'},
+    {who:'SG',act:'Strong corner is default kick target. Hands up before the pass arrives. If your man collapses on Daniel, you\'re getting the ball.',cls:'s-sh'},
+  ],
+  tips:[
+    'Don\'t run this play unless you genuinely have the matchup advantage. Bad ISO = wasted possession.',
+    'If you draw the double early (before you even drive), that\'s a skip pass to PF weak corner — they\'re most open.',
+    'If nobody helps at all, take the layup. Never force a pass when the rim is free.',
+    'Run this play at most twice in a row. Third time the defense will adjust and double early.',
+  ],
+  anim:'spread5',
+  pos:[
+    {key:'pg',x:.50,y:.48},{key:'sg',x:.88,y:.76},{key:'sf',x:.12,y:.62},
+    {key:'pf',x:.10,y:.80},{key:'c', x:.72,y:.54},
+  ],
+},
+{
+  id:'p4', name:'Center Pop 3', tag:'PLAY 04 — PNR POP TO ARC',
+  desc:'Your C wants to shoot 3s — feed that. Run a pick-and-roll but instead of the roll to the rim, C POPS out to the 3-point line. Smaller defenders can\'t contest it.',
+  roles:[
+    {key:'pg',note:'PnR ball handler'},
+    {key:'sg',note:'Weak wing — stretch'},
+    {key:'sf',note:'Weak corner — stretch'},
+    {key:'pf',note:'Strong corner — shooter'},
+    {key:'c', note:'Ball screen → immediate pop'},
+  ],
+  steps:[
+    {who:'SG + SF + PF',act:'Clear to the weak side. SG on weak wing, SF weak corner, PF strong corner. This creates a 2-man game on the right side for Daniel and C.',cls:'s-hi'},
+    {who:'C',act:'Set a hard ball screen on Daniel\'s right shoulder defender. Make CONTACT — a ghost screen is useless.',cls:'s-hi'},
+    {who:'Daniel (PG)',act:'Use the screen. Read: (1) defender goes over screen = pull-up 3 yourself, (2) defender goes under = mid-range, (3) switch happens → C has a size mismatch.',cls:'s-pg'},
+    {who:'C',act:'The INSTANT you feel the screen contact, pop back to the 3-point line fast. Don\'t roll — pop. If they switched, you have a small guarding you — that\'s money.',cls:'s-hi'},
+    {who:'Daniel (PG)',act:'If they switched, fire the skip pass to C at the 3-point line. If they didn\'t switch and C is open, pass. If nothing opens, pull up or draw foul.',cls:'s-pg'},
+  ],
+  tips:[
+    'C: after the screen, move IMMEDIATELY. Standing still kills the whole play.',
+    'The best outcome is a switch — now C has a point guard guarding them at the arc.',
+    'PF in the strong corner keeps their PF busy and prevents them from helping on C\'s pop.',
+    'If this works twice, start faking the pop and rolling to the rim — defenders will overcommit.',
+  ],
+  anim:'cPop5',
+  pos:[
+    {key:'pg',x:.42,y:.46},{key:'sg',x:.14,y:.62},{key:'sf',x:.12,y:.80},
+    {key:'pf',x:.88,y:.76},{key:'c', x:.60,y:.32},
+  ],
+},
+{
+  id:'p5', name:'Ghost Drive', tag:'PLAY 05 — NO-LOOK DUMP OFF',
+  desc:'After you\'ve established your corner kick reputation, they\'ll over-rotate. Ghost Drive is look right, pass left. Your SF cuts baseline while you stare at the corner.',
+  roles:[
+    {key:'pg',note:'Decoy driver — eyes opposite of pass'},
+    {key:'sg',note:'Strong corner — decoy target'},
+    {key:'sf',note:'Weak side → baseline cut'},
+    {key:'pf',note:'Weak corner — third option'},
+    {key:'c', note:'Dunker spot / lob threat'},
+  ],
+  steps:[
+    {who:'SG',act:'Park in the strong corner like always. Hands up, make eye contact with Daniel. You\'re the decoy — the defense will look at you.',cls:'s-sh'},
+    {who:'Daniel (PG)',act:'Drive hard toward the right side of the paint. Keep your HEAD and eyes pointing toward SG in the corner. Sell the kick-out pass.',cls:'s-pg'},
+    {who:'SF',act:'Start weak-side wing. When Daniel\'s feet cross the elbow, cut HARD along the baseline toward the dunker spot. Full speed.',cls:'s-hi'},
+    {who:'C',act:'Start at the dunker spot strong side. When SF cuts, flash to the middle of the paint creating a second dump-off option if SF is covered.',cls:'s-hi'},
+    {who:'Daniel (PG)',act:'With eyes on SG, use icon pass to fire the no-look pass to SF at the rim. Timing is everything — throw to where they\'re going, not where they are.',cls:'s-pg'},
+  ],
+  tips:[
+    'This play requires reps with your SF specifically. Do a warmup run before the real game.',
+    'The no-look works because your 99 pass accuracy means it\'s consistent — you won\'t miss.',
+    'Only run this AFTER you\'ve successfully kicked to SG at least twice. Build the expectation first.',
+    'If SF is late on the cut, abort. Don\'t throw it anyway.',
+  ],
+  anim:'ghost5',
+  pos:[
+    {key:'pg',x:.50,y:.46},{key:'sg',x:.88,y:.68},{key:'sf',x:.15,y:.64},
+    {key:'pf',x:.10,y:.80},{key:'c', x:.64,y:.22},
+  ],
+},
+{
+  id:'p6', name:'Flow State', tag:'PLAY 06 — FULL MOTION OFFENSE',
+  desc:'Full 5-man motion. Constant screens, cuts, and spacing. The ball moves faster than any defender. This is your 15-assist game play — run it when everyone\'s locked in.',
+  roles:[
+    {key:'pg',note:'Orchestrator & decision maker'},
+    {key:'sg',note:'Off-ball mover — screens & cuts'},
+    {key:'sf',note:'Gap filler — reads the floor'},
+    {key:'pf',note:'High-low with C'},
+    {key:'c', note:'Screen & pop — repeat cycle'},
+  ],
+  steps:[
+    {who:'ALL 5',act:'Ball ALWAYS moving. No player holds longer than 3 seconds without a pass or drive. Motion is the rule, standing is the exception.',cls:'s-hi'},
+    {who:'SG',act:'Never post up. Run cuts, use C and PF screens, cycle between corners and wings. Your constant movement drags their defender everywhere.',cls:'s-sh'},
+    {who:'C + PF',act:'Alternate screens. One screens for SG, the other pops to the arc. The defense can\'t guard both the screen and the pop simultaneously.',cls:'s-hi'},
+    {who:'SF',act:'Read the floor. When Daniel drives, fill the vacated spot. When SG cuts, fill where SG left. You are the connector that keeps spacing correct.',cls:'s-hi'},
+    {who:'Daniel (PG)',act:'Your job is to create the chain: you pass to C, C may kick to SG coming off a cut — that chain started with YOUR pass. Count those assists.',cls:'s-pg'},
+  ],
+  tips:[
+    'Flow State is for when you have rhythm and momentum. Don\'t start here — build into it.',
+    'The rule: always fill an empty spot on the arc. If someone cuts, someone fills.',
+    'In Flow State, SG in motion is the most dangerous — defenders lose them in traffic.',
+    'Daniel: resist ISO urge here. Your 15-assist game LIVES in this system.',
+  ],
+  anim:'flow5',
+  pos:[
+    {key:'pg',x:.50,y:.44},{key:'sg',x:.82,y:.70},{key:'sf',x:.16,y:.66},
+    {key:'pf',x:.36,y:.28},{key:'c', x:.64,y:.28},
+  ],
+},
+];
+
+// ─── 4V5 AI SCENARIOS ───
+const playsAI = [
+{
+  id:'ai_pg', name:'AI at PG', tag:'4V5 — AI CONTROLS POINT GUARD',
+  aiBadge:'AI PG — Least likely (your spot)',
+  desc:'If somehow an AI is at PG alongside you, you\'re basically playing 4v5 in the backcourt. But AI PGs are predictable — they dribble hunt and don\'t create for others. Exploit their rigidity.',
+  aiWho:'AI Teammate at PG',
+  aiWarnings:[
+    'AI PG will try to handle the ball too — be prepared to direct traffic early and claim ball-handling duties.',
+    'Opposing team may double the AI PG knowing it can\'t make reads, forcing turnovers.',
+    'AI PG won\'t set up your plays — you need to initiate everything yourself.',
+  ],
+  strategies:[
+    {
+      title:'Claim the Ball Immediately',
+      sub:'PG AI — Ball Control Protocol',
+      points:[
+        'Get the inbound or rebound first every single time. Don\'t let AI PG initiate.',
+        'If AI PG has the ball, call for it immediately using the ball-demand button.',
+        'Treat yourself as the ONLY initiator — AI PG becomes a spot-up shooter or cutter.',
+        'Push pace yourself on fast breaks. AI PG will wait — you go.',
+      ],
+      play:'Run any 5v5 play normally. Just treat AI PG as a 5th spacing player in the corner or wing.',
+    },
+    {
+      title:'4-Out with AI at the Elbow',
+      sub:'Use AI as a static screener',
+      points:[
+        'Position AI PG at the top of the key or elbow before you run plays.',
+        'Let AI PG set natural screens by dribbling toward them — use their body.',
+        'Run Drop & Pop with SG. AI PG\'s presence at the top occupies a defender.',
+        'If opponent doubles AI PG, all 3 real teammates are open — easy reads.',
+      ],
+      play:'Drop & Pop (P1) or Spread & Slash (P3) with AI PG as the 5th spacer at top.',
+    },
+  ],
+  pos:[
+    {key:'pg',x:.50,y:.44},{key:'ai',x:.50,y:.60},{key:'sg',x:.88,y:.76},
+    {key:'sf',x:.10,y:.70},{key:'c',x:.50,y:.30},
+  ],
+  anim:'ai5_pg',
+},
+{
+  id:'ai_sg', name:'AI at SG', tag:'4V5 — AI CONTROLS SHOOTING GUARD',
+  aiBadge:'AI SG — They will double you through this spot',
+  desc:'This is the most dangerous AI scenario. The opponent knows your SG is AI — they will leave that corner unguarded and double YOU instead. You need to recognize the double and punish it.',
+  aiWho:'AI Teammate at SG / Shooting Guard',
+  aiWarnings:[
+    'Expect a HARD double team on Daniel every time you catch the ball — they\'re abandoning AI SG.',
+    'AI SG will not cut to open spots — you cannot rely on their corner 3 the same way.',
+    'AI SG may take ill-timed shots or not set screens when needed.',
+    'Opposing PG will cheat off AI SG and help deny Daniel\'s drive lanes.',
+  ],
+  strategies:[
+    {
+      title:'Double Recognition + Skip',
+      sub:'The core 4v5 counter when AI is SG',
+      points:[
+        'When double comes, DO NOT panic dribble. Hold the ball for half a second and locate the skip.',
+        'AI SG\'s defender has left to double you — that\'s a WIDE open spot. Find SF or PF instead.',
+        'Skip pass to PF weak corner is the safest — longest pass away from the double, most open look.',
+        'After you skip once successfully, the defense will hesitate to double again. Then you attack 1v1.',
+      ],
+      play:'Spread & Slash (P3) — 4 real players spread wide, AI SG at weak wing as spacer.',
+    },
+    {
+      title:'AI SG as Screen Body',
+      sub:'Turn the liability into a tool',
+      points:[
+        'Station AI SG at the opposite elbow or weak-side block.',
+        'Run cuts THROUGH AI SG\'s body — their defender won\'t fight through a screen they don\'t expect.',
+        'When SF cuts off AI SG\'s position, that\'s a free layup if timed right.',
+        'Lob to C off AI SG screen — easy dunk if C positions at the rim.',
+      ],
+      play:'Center Pop (P4) — C pops, AI SG occupies weak side. Only 3 real players moving, C has space.',
+    },
+    {
+      title:'Go Directly at the Double',
+      sub:'Advanced — only when you\'re confident',
+      points:[
+        'The moment you see two defenders running at you, set your feet and don\'t move.',
+        'Let them commit fully, then throw a skip pass or pocket pass under/through the double.',
+        'With 99 pass accuracy, threading a pocket pass through a double team is high percentage.',
+        'This is high risk — only do it when you\'ve already established your game.',
+      ],
+      play:'Ghost Drive (P5) — the no-look works even better when defense over-commits to the double.',
+    },
+  ],
+  pos:[
+    {key:'pg',x:.50,y:.46},{key:'ai',x:.88,y:.72},{key:'sf',x:.10,y:.66},
+    {key:'pf',x:.10,y:.82},{key:'c',x:.50,y:.30},
+  ],
+  anim:'ai5_sg',
+},
+{
+  id:'ai_sf', name:'AI at SF', tag:'4V5 — AI CONTROLS SMALL FORWARD',
+  aiBadge:'AI SF — Opponent will pack the paint',
+  desc:'AI SF means your weak-side wing coverage is unreliable. The opponent will shade their help toward the paint knowing SF won\'t punish them from the arc. Counter: force them to respect the corners.',
+  aiWho:'AI Teammate at Small Forward',
+  aiWarnings:[
+    'AI SF will not fill spacing gaps automatically — you need real players to do the spacing work.',
+    'Opposing SF will leave AI SF and help in the paint on your drives, clogging your lanes.',
+    'AI SF cuts and timing are unpredictable — don\'t rely on weak-side cuts.',
+    'Doubling you through AI SF\'s lane is a common opponent tactic — watch for it.',
+  ],
+  strategies:[
+    {
+      title:'Load to Strong Side',
+      sub:'Forget the weak side — dominate the right',
+      points:[
+        'Position AI SF on the weak corner and ignore that side. All action on the strong side.',
+        'SG in strong corner, C at the elbow, PF on strong wing — 3v3 on one half of the court.',
+        'With AI SF parked weak side, their help defender has a longer distance to travel.',
+        'All your plays run to the strong side — less reliance on AI SF\'s position.',
+      ],
+      play:'Horns Kick (P2) — strong-side action, AI SF stays weak corner as a spacer.',
+    },
+    {
+      title:'C Roll & Seal',
+      sub:'Use the clogged paint against them',
+      points:[
+        'Since defense sags into the paint expecting help from AI SF, run C as a roll man instead of pop.',
+        'Daniel drives, draws two, kicks to C rolling to the rim — they can\'t recover.',
+        'AI SF being weak side means C\'s roll path is CLEAN — no one is over there.',
+        'Lob pass over the top to rolling C is available when their PF collapses on your drive.',
+      ],
+      play:'Center Pop (P4) modified — C rolls to rim instead of popping. Strong side only.',
+    },
+  ],
+  pos:[
+    {key:'pg',x:.50,y:.46},{key:'sg',x:.85,y:.72},{key:'ai',x:.10,y:.72},
+    {key:'pf',x:.14,y:.82},{key:'c',x:.58,y:.30},
+  ],
+  anim:'ai5_sf',
+},
+{
+  id:'ai_pf', name:'AI at PF', tag:'4V5 — AI CONTROLS POWER FORWARD',
+  aiBadge:'AI PF — Opponent will zone the paint',
+  desc:'AI PF means your high-low action and weak-side corner are compromised. Expect their PF to sag off the AI and clog driving lanes or help on C. Run plays that punish that sag.',
+  aiWho:'AI Teammate at Power Forward',
+  aiWarnings:[
+    'Their PF will leave AI PF wide open and zone the paint — expect a crowded key.',
+    'AI PF won\'t properly execute pick and pop timing — don\'t rely on PF screens.',
+    'The opponent knows the weak corner is empty (AI PF won\'t punish from there).',
+    'AI PF may attempt contested shots — call for the ball if they have it.',
+  ],
+  strategies:[
+    {
+      title:'4-Corner Offense',
+      sub:'Punish the abandoned PF spot',
+      points:[
+        'Station AI PF in the strong corner. Their PF leaves to help — AI PF is OPEN.',
+        'Drive, draw the help, kick back to AI PF in the corner — they will shoot it.',
+        'This is counterintuitive but effective: the opponent leaves AI PF open on purpose, but AI can still make that corner 3.',
+        'If AI PF misses — that\'s fine, you trained the defense to respect that spot.',
+      ],
+      play:'Drop & Pop (P1) with SG AND AI PF both in corners. Two targets, one drive.',
+    },
+    {
+      title:'C Dominant Offense',
+      sub:'Remove PF from the equation',
+      points:[
+        'Run all plays through C exclusively. C is your real big.',
+        'C sets every screen, pops every time, rolls every time — no PF in the scheme.',
+        'AI PF parks in the weak corner as a 5th spacer only — they never touch the ball.',
+        'Your real 4-man unit: Daniel + SG + SF + C. Play like it\'s 4v5 with a bonus spacer.',
+      ],
+      play:'Center Pop (P4) + Flow State (P6) — all actions flow through C. AI PF is a cone.',
+    },
+  ],
+  pos:[
+    {key:'pg',x:.50,y:.46},{key:'sg',x:.88,y:.72},{key:'sf',x:.12,y:.68},
+    {key:'ai',x:.10,y:.82},{key:'c',x:.50,y:.28},
+  ],
+  anim:'ai5_pf',
+},
+{
+  id:'ai_c', name:'AI at Center', tag:'4V5 — AI CONTROLS CENTER',
+  aiBadge:'AI C — Most impactful scenario — paint is gone',
+  desc:'AI Center is the toughest scenario. No rim protection, no real screens, no lob threat. The opponent will flood the paint. Your entire game becomes perimeter-based — 4 shooters and Daniel.',
+  aiWho:'AI Teammate at Center',
+  aiWarnings:[
+    'Their C will leave AI C and completely pack the paint — expect the lane to be jammed every drive.',
+    'AI C does not set real screens — you lose your pick-and-roll game entirely.',
+    'No lob threat means the opponent ignores the rim and loads up on perimeter closeouts.',
+    'AI C rebounding is inconsistent — be ready for offensive rebound opportunities.',
+  ],
+  strategies:[
+    {
+      title:'4-Out 1-In Perimeter Attack',
+      sub:'Remove C from paint — go all perimeter',
+      points:[
+        'Pull AI C out to the 3-point line and treat them as a 4th perimeter player.',
+        'Run 4-out offense: SG corner, SF wing, PF corner, AI C arc, Daniel handling.',
+        'The paint is empty — if you beat your man off the dribble, it\'s a straight line to the rim.',
+        'No C help defender = the drive is even more valuable than in normal 5v5.',
+      ],
+      play:'Spread & Slash (P3) but with AI C at the arc. 4-out ISO is now even more space.',
+    },
+    {
+      title:'3-Point Blitz',
+      sub:'Punish with the long ball — 4 real shooters',
+      points:[
+        'Move AI C to the elbow or arc. Station SG, SF, and PF in all three 3-point areas.',
+        'Daniel drives to draw help, kicks to the open shooter — now you have THREE real shooters receiving.',
+        'With AI C at elbow, if you fake drive and pull up, C is a screen assist.',
+        'SG (your shooter) should be the priority kick. But SF and PF are real threats now.',
+      ],
+      play:'Horns Kick (P2) with AI C acting as one of the Horns. Use them as a body, not a playmaker.',
+    },
+    {
+      title:'Pocket Pass Attack',
+      sub:'Since paint is packed — beat it with precision',
+      points:[
+        'When driving and getting packed, stop at the short corner and throw pocket passes.',
+        'PF or SF cutting to the mid-post is open — pass below the help defender.',
+        'With 99 pass accuracy, pocket passes and lobs through traffic are high percentage.',
+        'This turns their paint-packing strategy against them — they crowd in, you go over or through.',
+      ],
+      play:'Ghost Drive (P5) combined with pocket passing — no-look to cutters when packed.',
+    },
+  ],
+  pos:[
+    {key:'pg',x:.50,y:.46},{key:'sg',x:.88,y:.74},{key:'sf',x:.12,y:.66},
+    {key:'pf',x:.10,y:.80},{key:'ai',x:.68,y:.56},
+  ],
+  anim:'ai5_c',
+},
+];
+
+// ─── ANIMATION ENGINE ───
+const COLORS = {
+  pg:'#4D9EFF', sg:'#FF4D4D', sf:'#39D98A',
+  pf:'#CC88FF', c:'#FFB700', ai:'#FF6B35',
+  ball:'#FF9A3C', arrow:'rgba(255,183,0,.7)', arrowRed:'rgba(255,77,77,.75)',
+  arrowAI:'rgba(255,107,53,.75)',
+};
+
+let _raf=null, _t=0, _running=false;
+const DUR=300;
+
+function lerp(a,b,t){return a+(b-a)*t;}
+function ease(t){return t<.5?2*t*t:-1+(4-2*t)*t;}
+
+function drawCourt(ctx,W,H){
+  ctx.fillStyle='#C88B3A';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#8B5E1A';ctx.fillRect(W*.33,0,W*.34,H*.38);
+  ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=1.5;ctx.setLineDash([]);
+  // FT line
+  ctx.beginPath();ctx.moveTo(W*.33,H*.38);ctx.lineTo(W*.67,H*.38);ctx.stroke();
+  // 3-pt arc
+  ctx.beginPath();ctx.arc(W*.5,0,H*.72,.18*Math.PI,.82*Math.PI);ctx.stroke();
+  // 3-pt corners
+  [[W*.09,0,W*.09,H*.28],[W*.91,0,W*.91,H*.28]].forEach(([x1,y1,x2,y2])=>{
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  });
+  // hoop
+  ctx.beginPath();ctx.arc(W*.5,H*.07,W*.025,0,Math.PI*2);
+  ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=2;ctx.stroke();
+  // backboard
+  ctx.beginPath();ctx.moveTo(W*.38,H*.04);ctx.lineTo(W*.62,H*.04);
+  ctx.strokeStyle='rgba(255,255,255,.5)';ctx.lineWidth=2.5;ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawPlayer(ctx,x,y,key,W,H,glow){
+  const d=DEF[key]; if(!d)return;
+  const px=x*W,py=y*H,r=W*.034;
+  if(glow){ctx.save();ctx.shadowColor=d.color;ctx.shadowBlur=16;}
+  ctx.beginPath();ctx.arc(px,py,r,0,Math.PI*2);
+  ctx.fillStyle=d.color;ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+  if(glow)ctx.restore();
+  ctx.fillStyle='#000';
+  ctx.font=`bold ${Math.round(r*.85)}px DM Sans,sans-serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(d.label,px,py);
+}
+
+function drawBall(ctx,x,y,W,H){
+  const px=x*W,py=y*H,r=W*.024;
+  ctx.save();ctx.shadowColor='#FF9A3C';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(px,py,r,0,Math.PI*2);
+  ctx.fillStyle='#FF9A3C';ctx.fill();
+  ctx.strokeStyle='#a05010';ctx.lineWidth=1;ctx.stroke();
+  ctx.restore();
+}
+
+function drawArrow(ctx,x1,y1,x2,y2,col,W,H,dashed){
+  ctx.save();
+  ctx.strokeStyle=col;ctx.lineWidth=2;
+  if(dashed)ctx.setLineDash([5,4]);else ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(x1*W,y1*H);ctx.lineTo(x2*W,y2*H);ctx.stroke();
+  // arrowhead
+  const angle=Math.atan2((y2-y1)*H,(x2-x1)*W);
+  const hs=8;
+  ctx.fillStyle=col;ctx.beginPath();
+  ctx.moveTo(x2*W,y2*H);
+  ctx.lineTo(x2*W-hs*Math.cos(angle-Math.PI/6),y2*H-hs*Math.sin(angle-Math.PI/6));
+  ctx.lineTo(x2*W-hs*Math.cos(angle+Math.PI/6),y2*H-hs*Math.sin(angle+Math.PI/6));
+  ctx.closePath();ctx.fill();
+  ctx.restore();
+}
+
+const animFns = {
+  dropPop5:(ctx,t,W,H)=>{
+    const e=ease(Math.min(t,1));
+    const pgX=lerp(.50,.60,e), pgY=lerp(.42,.26,e);
+    const pt=Math.max(0,(t-.6)/.4), pe=ease(Math.min(pt,1));
+    const bX=lerp(pgX,.88,pe), bY=lerp(pgY,.76,pe)-Math.sin(pe*Math.PI)*.07;
+    if(pt>0){drawArrow(ctx,pgX,pgY,.88,.76,COLORS.arrowRed,W,H,false);}
+    else{drawArrow(ctx,.50,.42,pgX,pgY,COLORS.arrow,W,H,true);}
+    return{pg:{x:pgX,y:pgY},sg:{x:.88,y:.76},sf:{x:.10,y:.70},pf:{x:.12,y:.82},c:{x:.50,y:.30},ball:{x:bX,y:bY}};
+  },
+  horns5:(ctx,t,W,H)=>{
+    const e=ease(Math.min(t,1));
+    const sgX=lerp(.15,.88,e), sgY=lerp(.62,.76,e);
+    const pt=Math.max(0,(t-.55)/.45), pe=ease(Math.min(pt,1));
+    const pgX=lerp(.50,.60,Math.min(e*2,1)), pgY=lerp(.44,.32,Math.min(e*2,1));
+    const bX=lerp(pgX,sgX,pe), bY=lerp(pgY,sgY,pe)-Math.sin(pe*Math.PI)*.06;
+    ctx.save();ctx.strokeStyle=COLORS.arrowRed;ctx.lineWidth=2;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(.15*W,.62*H);ctx.bezierCurveTo(.15*W,.84*H,.88*W,.84*H,.88*W,.76*H);ctx.stroke();ctx.restore();
+    return{pg:{x:pgX,y:pgY},sg:{x:sgX,y:sgY},sf:{x:.09,y:.78},pf:{x:.35,y:.30},c:{x:.65,y:.30},ball:{x:bX,y:bY}};
+  },
+  spread5:(ctx,t,W,H)=>{
+    const e=ease(Math.min(t,1));
+    const pgY=lerp(.48,.24,e);
+    const pt=Math.max(0,(t-.65)/.35), pe=ease(Math.min(pt,1));
+    const bX=lerp(.50,.88,pe), bY=lerp(pgY,.76,pe)-Math.sin(pe*Math.PI)*.06;
+    drawArrow(ctx,.50,.48,.50,pgY,COLORS.arrow,W,H,false);
+    if(pt>0)drawArrow(ctx,.50,pgY,.88,.76,COLORS.arrowRed,W,H,false);
+    return{pg:{x:.50,y:pgY},sg:{x:.88,y:.76},sf:{x:.12,y:.62},pf:{x:.10,y:.80},c:{x:.72,y:.54},ball:{x:bX,y:bY}};
+  },
+  cPop5:(ctx,t,W,H)=>{
+    const e=ease(Math.min(t,1));
+    const cX=lerp(.60,.76,e), cY=lerp(.32,.58,e);
+    const pgX=lerp(.42,.52,e), pgY=lerp(.46,.32,e);
+    const pt=Math.max(0,(t-.6)/.4), pe=ease(Math.min(pt,1));
+    const bX=lerp(pgX,cX,pe), bY=lerp(pgY,cY,pe)-Math.sin(pe*Math.PI)*.07;
+    ctx.save();ctx.strokeStyle='rgba(204,136,255,.7)';ctx.lineWidth=2;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(.60*W,.32*H);ctx.lineTo(cX*W,cY*H);ctx.stroke();ctx.restore();
+    return{pg:{x:pgX,y:pgY},sg:{x:.14,y:.62},sf:{x:.12,y:.80},pf:{x:.88,y:.76},c:{x:cX,y:cY},ball:{x:bX,y:bY}};
+  },
+  ghost5:(ctx,t,W,H)=>{
+    const e=ease(Math.min(t,1));
+    const pgX=lerp(.50,.52,e), pgY=lerp(.46,.26,e);
+    const sfX=lerp(.15,.64,e), sfY=lerp(.64,.22,e);
+    const pt=Math.max(0,(t-.65)/.35), pe=ease(Math.min(pt,1));
+    const bX=lerp(pgX,sfX,pe), bY=lerp(pgY,sfY,pe);
+    ctx.save();ctx.strokeStyle=COLORS.arrowRed;ctx.lineWidth=2;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(.15*W,.64*H);ctx.bezierCurveTo(.30*W,.55*H,.55*W,.35*H,sfX*W,sfY*H);ctx.stroke();ctx.restore();
+    return{pg:{x:pgX,y:pgY},sg:{x:.88,y:.68},sf:{x:sfX,y:sfY},pf:{x:.10,y:.80},c:{x:.64,y:.22},ball:{x:bX,y:bY}};
+  },
+  flow5:(ctx,t,W,H)=>{
+    const w=(b,a,sp,off)=>b+a*Math.sin(t*sp*Math.PI*2+off);
+    return{
+      pg:{x:w(.50,.05,1,0),    y:w(.44,.04,1,0)},
+      sg:{x:w(.82,.07,1.3,1),  y:w(.70,.05,1.3,1)},
+      sf:{x:w(.16,.06,.9,2.5), y:w(.66,.05,.9,2.5)},
+      pf:{x:w(.36,.04,1.1,1.5),y:w(.28,.03,1.1,1.5)},
+      c: {x:w(.64,.04,1.2,3),  y:w(.28,.03,1.2,3)},
+      ball:{x:w(.50,.09,.8,.5), y:w(.44,.06,.8,.5)},
+    };
+  },
+  // AI animations — highlight the AI player with glow
+  ai5_pg:(ctx,t,W,H)=>{
+    const e=ease(Math.min(t,1));
+    const pgX=lerp(.50,.58,e), pgY=lerp(.44,.28,e);
+    const pt=Math.max(0,(t-.6)/.4), pe=ease(Math.min(pt,1));
+    const bX=lerp(pgX,.88,pe), bY=lerp(pgY,.76,pe)-Math.sin(pe*Math.PI)*.07;
+    drawArrow(ctx,.50,.44,pgX,pgY,COLORS.arrow,W,H,true);
+    if(pt>0)drawArrow(ctx,pgX,pgY,.88,.76,COLORS.arrowRed,W,H,false);
+    return{pg:{x:pgX,y:pgY},ai:{x:.50,y:.60},sg:{x:.88,y:.76},sf:{x:.10,y:.70},c:{x:.50,y:.30},ball:{x:bX,y:bY}};
+  },
+  ai5_sg:(ctx,t,W,H)=>{
+    const e=ease(Math.min(t,1));
+    const pgX=lerp(.50,.50,1), pgY=lerp(.46,.24,e);
+    const pt=Math.max(0,(t-.6)/.4), pe=ease(Math.min(pt,1));
+    // skip to PF weak corner
+    const bX=lerp(pgX,.10,pe), bY=lerp(pgY,.82,pe)-Math.sin(pe*Math.PI)*.08;
+    drawArrow(ctx,.50,.46,.50,pgY,COLORS.arrow,W,H,true);
+    if(pt>0)drawArrow(ctx,pgX,pgY,.10,.82,COLORS.arrowAI,W,H,false);
+    return{pg:{x:pgX,y:pgY},ai:{x:.88,y:.72},sf:{x:.10,y:.66},pf:{x:.10,y:.82},c:{x:.50,y:.30},ball:{x:bX,y:bY}};
+  },
+  ai5_sf:(ctx,t,W,H)=>{
+    const e=ease(Math.min(t,1));
+    const pgX=lerp(.50,.58,e), pgY=lerp(.46,.28,e);
+    const pt=Math.max(0,(t-.55)/.45), pe=ease(Math.min(pt,1));
+    const bX=lerp(pgX,.85,pe), bY=lerp(pgY,.72,pe)-Math.sin(pe*Math.PI)*.06;
+    drawArrow(ctx,.50,.46,pgX,pgY,COLORS.arrow,W,H,true);
+    if(pt>0)drawArrow(ctx,pgX,pgY,.85,.72,COLORS.arrowRed,W,H,false);
+    return{pg:{x:pgX,y:pgY},sg:{x:.85,y:.72},ai:{x:.10,y:.72},pf:{x:.14,y:.82},c:{x:.58,y:.30},ball:{x:bX,y:bY}};
+  },
+  ai5_pf:(ctx,t,W,H)=>{
+    const e=ease(Math.min(t,1));
+    const cX=lerp(.50,.66,e), cY=lerp(.28,.52,e);
+    const pgX=lerp(.50,.54,e), pgY=lerp(.46,.30,e);
+    const pt=Math.max(0,(t-.6)/.4), pe=ease(Math.min(pt,1));
+    const bX=lerp(pgX,cX,pe), bY=lerp(pgY,cY,pe)-Math.sin(pe*Math.PI)*.06;
+    ctx.save();ctx.strokeStyle='rgba(255,183,0,.65)';ctx.lineWidth=2;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(.50*W,.28*H);ctx.lineTo(cX*W,cY*H);ctx.stroke();ctx.restore();
+    return{pg:{x:pgX,y:pgY},sg:{x:.88,y:.72},sf:{x:.12,y:.68},ai:{x:.10,y:.82},c:{x:cX,y:cY},ball:{x:bX,y:bY}};
+  },
+  ai5_c:(ctx,t,W,H)=>{
+    const e=ease(Math.min(t,1));
+    const pgY=lerp(.46,.24,e);
+    const pt=Math.max(0,(t-.6)/.4), pe=ease(Math.min(pt,1));
+    const bX=lerp(.50,.88,pe), bY=lerp(pgY,.74,pe)-Math.sin(pe*Math.PI)*.06;
+    drawArrow(ctx,.50,.46,.50,pgY,COLORS.arrow,W,H,true);
+    if(pt>0)drawArrow(ctx,.50,pgY,.88,.74,COLORS.arrowRed,W,H,false);
+    return{pg:{x:.50,y:pgY},sg:{x:.88,y:.74},sf:{x:.12,y:.66},pf:{x:.10,y:.80},ai:{x:.68,y:.56},ball:{x:bX,y:bY}};
+  },
+};
+
+function runAnim(animKey,canvas){
+  if(_raf){cancelAnimationFrame(_raf);_raf=null;}
+  _t=0;_running=true;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  const fn=animFns[animKey]; if(!fn)return;
+  function tick(){
+    ctx.clearRect(0,0,W,H);
+    drawCourt(ctx,W,H);
+    const t=_t/DUR;
+    const pos=fn(ctx,t,W,H);
+    Object.entries(pos).forEach(([k,p])=>{
+      if(k==='ball')return;
+      drawPlayer(ctx,p.x,p.y,k,W,H,k==='pg');
+    });
+    if(pos.ball)drawBall(ctx,pos.ball.x,pos.ball.y,W,H);
+    _t++;
+    if(_t<DUR)_raf=requestAnimationFrame(tick);
+    else{_t=0;_raf=requestAnimationFrame(tick);}
+  }
+  _raf=requestAnimationFrame(tick);
+}
+
+function drawStatic(positions,canvas){
+  if(!canvas||!positions)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  ctx.clearRect(0,0,W,H);drawCourt(ctx,W,H);
+  positions.forEach(p=>drawPlayer(ctx,p.x,p.y,p.key,W,H,p.key==='pg'));
+  const pg=positions.find(p=>p.key==='pg');
+  if(pg)drawBall(ctx,pg.x+.04,pg.y-.03,W,H);
+}
+
+function initCanvas(canvasId,positions){
+  setTimeout(()=>{
+    const el=document.getElementById(canvasId);
+    if(!el)return;
+    const rect=el.getBoundingClientRect();
+    const dpr=window.devicePixelRatio||1;
+    el.width=rect.width*dpr;
+    el.height=(rect.width*380/600)*dpr;
+    el.style.height=(rect.width*380/600)+'px';
+    drawStatic(positions,el);
+  },60);
+}
+
+// ── STATE ──
+let currentTab='5v5';
+let currentPlayId=null;
+let animRunning=false;
+
+// ── TOGGLE ANIMATION ──
+window.toggleAnim=function(animKey,positions){
+  const canvas=document.getElementById('cc');
+  const btn=document.getElementById('ab');
+  if(!canvas)return;
+  if(!animRunning){
+    animRunning=true;btn.textContent='⏹ STOP';
+    runAnim(animKey,canvas);
+  }else{
+    animRunning=false;btn.textContent='▶ ANIMATE';
+    if(_raf){cancelAnimationFrame(_raf);_raf=null;}
+    drawStatic(positions,canvas);
+  }
+};
+
+// ── RENDER SIDEBAR ──
+function renderSidebar(){
+  const sb=document.getElementById('sidebar');
+  if(currentTab==='5v5'){
+    sb.innerHTML=`<div class="sgroup"><div class="sgroup-title">5v5 Plays</div>`+
+      plays5v5.map((p,i)=>`
+        <button class="pbtn${currentPlayId===p.id?' active':''}" onclick="selectPlay('${p.id}',this)">
+          <div class="pnum">${String(i+1).padStart(2,'0')}</div>
+          <div class="pi"><div class="pn">${p.name}</div><div class="pt">${p.tag.split('—')[1]?.trim()||''}</div></div>
+          <span class="spill sp-5v5">5V5</span>
+        </button>`).join('')+`</div>`;
+  } else if(currentTab==='ai'){
+    sb.innerHTML=`<div class="sgroup"><div class="sgroup-title">AI Scenarios (4v5)</div>`+
+      playsAI.map(p=>`
+        <button class="pbtn${currentPlayId===p.id?' active':''}" onclick="selectPlay('${p.id}',this)">
+          <div class="pnum">🤖</div>
+          <div class="pi"><div class="pn">${p.name}</div><div class="pt">${p.tag.split('—')[1]?.trim()||''}</div></div>
+          <span class="spill sp-ai">AI</span>
+        </button>`).join('')+`</div>`;
+  } else {
+    sb.innerHTML=`<div class="sgroup"><div class="sgroup-title">Rules</div>
+      <button class="pbtn active"><div class="pnum">📖</div><div class="pi"><div class="pn">System Rules</div><div class="pt">Read this first</div></div></div>
+    </div>`;
+  }
+}
+
+// ── RENDER PLAY ──
+function renderPlay5v5(play){
+  const rolesHTML=play.roles.map(r=>`
+    <div class="rchip">
+      <div class="rdot" style="background:${DEF[r.key]?.color}"></div>
+      <span class="rname">${DEF[r.key]?.label}</span>
+      <span class="rnote">— ${r.note}</span>
+    </div>`).join('');
+  const stepsHTML=play.steps.map((s,i)=>`
+    <div class="step ${s.cls}">
+      <div class="snum">${String(i+1).padStart(2,'0')}</div>
+      <div class="swho">${s.who}</div>
+      <div class="sact">${s.act}</div>
+    </div>`).join('');
+  const tipsHTML=play.tips.map(t=>`<li>${t}</li>`).join('');
+
+  document.getElementById('content').innerHTML=`<div class="fade-in">
+    <div class="play-hdr">
+      <div class="play-hdr-left">
+        <div class="ptag">${play.tag}</div>
+        <h2>${play.name}</h2>
+        <div class="pdesc">${play.desc}</div>
+      </div>
+      <button class="animBtn" id="ab" onclick="toggleAnim('${play.anim}',${JSON.stringify(play.pos)})">▶ ANIMATE</button>
+    </div>
+    <div class="roles">${rolesHTML}</div>
+    <div class="court-wrap">
+      <div class="clabel">Half-Court Diagram</div>
+      <canvas id="cc" width="600" height="368"></canvas>
+    </div>
+    <div class="steps">${stepsHTML}</div>
+    <div class="tips"><h3>🧠 Daniel's Notes</h3><ul>${tipsHTML}</ul></div>
+  </div>`;
+  animRunning=false;
+  initCanvas('cc',play.pos);
+}
+
+function renderPlayAI(play){
+  const rolesHTML=play.pos.map(p=>`
+    <div class="rchip${p.key==='ai'?' ai-slot':''}">
+      <div class="rdot" style="background:${DEF[p.key]?.color}"></div>
+      <span class="rname">${DEF[p.key]?.label}</span>
+      <span class="rnote">— ${p.key==='ai'?'AI TEAMMATE':DEF[p.key]?.name}</span>
+    </div>`).join('');
+
+  const warningsHTML=play.aiWarnings.map(w=>`<li>${w}</li>`).join('');
+  const strategiesHTML=play.strategies.map(s=>`
+    <div class="ai-card">
+      <h3>${s.title}</h3>
+      <div class="ac-sub">${s.sub}</div>
+      <ul>${s.points.map(p=>`<li><strong></strong>${p}</li>`).join('')}</ul>
+      <div class="ac-play">📋 BEST PLAY: ${s.play}</div>
+    </div>`).join('');
+
+  document.getElementById('content').innerHTML=`<div class="fade-in">
+    <div class="play-hdr">
+      <div class="play-hdr-left">
+        <div class="ptag">${play.tag}</div>
+        <h2>${play.name}</h2>
+        <div class="pdesc">${play.desc}</div>
+        <div class="ai-badge">🤖 ${play.aiBadge}</div>
+      </div>
+      <button class="animBtn" id="ab" onclick="toggleAnim('${play.anim}',${JSON.stringify(play.pos)})">▶ ANIMATE</button>
+    </div>
+    <div class="roles">${rolesHTML}</div>
+    <div class="court-wrap">
+      <div class="clabel">Formation Diagram — AI highlighted in orange</div>
+      <canvas id="cc" width="600" height="368"></canvas>
+    </div>
+    <div class="ai-warn">
+      <div class="ai-warn-title">⚠ What the Opponent Will Do</div>
+      <ul>${warningsHTML}</ul>
+    </div>
+    <div class="ai-scenario-grid">${strategiesHTML}</div>
+  </div>`;
+  animRunning=false;
+  initCanvas('cc',play.pos);
+}
+
+function renderRules(){
+  document.getElementById('content').innerHTML=`<div class="fade-in">
+    <div class="play-hdr"><div class="play-hdr-left">
+      <div class="ptag">SYSTEM RULES</div>
+      <h2 style="color:var(--gold)">The Laws of the System</h2>
+      <div class="pdesc">The principles that make 15+ assists possible — and how to survive a 4v5.</div>
+    </div></div>
+
+    <div class="rsec">
+      <h3>🏀 The 5 Laws of 15 Assists</h3>
+      <div class="rlist">
+        <div class="ritem"><div class="ricon">👁️</div><div class="rtext"><strong>See the floor before you dribble.</strong> Scan corners and wings as you cross half court. 99 pass accuracy is useless if you don't know who's open.<div class="rsub">Habit: glance at both corners before you receive the inbound.</div></div></div>
+        <div class="ritem"><div class="ricon">🎯</div><div class="rtext"><strong>SG gets the first look every possession.</strong> If your shooter is open — even slightly — that's the pass. No exceptions. They're why defenses sag off you.<div class="rsub">Rule: if SG hasn't touched the ball in 3 straight possessions, run Drop & Pop immediately.</div></div></div>
+        <div class="ritem"><div class="ricon">🧊</div><div class="rtext"><strong>ISO only on real mismatches.</strong> You'll feel it when you can score at will. Any other time — run a play, move the ball.<div class="rsub">Rule: never ISO twice in a row unless you scored the first time.</div></div></div>
+        <div class="ritem"><div class="ricon">📐</div><div class="rtext"><strong>Spacing is non-negotiable.</strong> Two teammates on the same side collapses the play. Call it out before the possession starts.<div class="rsub">Rule: no two teammates closer than 15 feet unless they're in a screen.</div></div></div>
+        <div class="ritem"><div class="ricon">🔄</div><div class="rtext"><strong>Ball movement beats any defense.</strong> The ball moves faster than a defender. One extra pass creates a wide-open look a drive never would.<div class="rsub">Rule: if a play doesn't open in 4 seconds, reset. Don't force it.</div></div></div>
+      </div>
+    </div>
+
+    <div class="rsec">
+      <h3>🤖 The 3 Laws of Surviving a 4v5 (AI on Squad)</h3>
+      <div class="rlist">
+        <div class="ritem"><div class="ricon">🔍</div><div class="rtext"><strong>Identify the double EARLY.</strong> The moment you get the ball, look for the second defender. If they're coming before you've dribbled — you already know where to go.<div class="rsub">Don't wait for the double to arrive. Pre-read it and be mid-throw when they get there.</div></div></div>
+        <div class="ritem"><div class="ricon">🎭</div><div class="rtext"><strong>Use the AI as a body, not a playmaker.</strong> Park them in the corner or elbow. Don't throw them the ball expecting plays — use their presence as a screen or spacer.<div class="rsub">The opponent is ignoring AI — use that to your advantage by running cuts off them.</div></div></div>
+        <div class="ritem"><div class="ricon">⚡</div><div class="rtext"><strong>Speed up vs. a 4v5 — don't slow down.</strong> The longer the possession, the more time the opponent has to double. Push pace, make quick decisions, punish their scheme before they set it up.<div class="rsub">Fast passes beat doubles. Hesitation kills 4v5 possessions.</div></div></div>
+      </div>
+    </div>
+
+    <div class="rsec">
+      <h3>📢 Call System — Say These Out Loud</h3>
+      <div class="rlist">
+        <div class="ritem"><div class="ricon">🗣️</div><div class="rtext"><strong>"Corner"</strong> — SG: strong corner NOW. Everyone else hold.<div class="rsub">Use before a drive when you need SG in position first.</div></div></div>
+        <div class="ritem"><div class="ricon">🗣️</div><div class="rtext"><strong>"Spread"</strong> — All 4 go to 5-out. ISO incoming.<div class="rsub">Use when you spot a weak matchup and want clean 1v1 space.</div></div></div>
+        <div class="ritem"><div class="ricon">🗣️</div><div class="rtext"><strong>"Pop"</strong> — C: step out to the arc. PnR pop play.<div class="rsub">Use mid dribble-drive when you want C popping instead of rolling.</div></div></div>
+        <div class="ritem"><div class="ricon">🗣️</div><div class="rtext"><strong>"Flow"</strong> — Motion offense, keep moving, find the open man.<div class="rsub">Use when the team has rhythm and you want to sustain it.</div></div></div>
+        <div class="ritem"><div class="ricon">🗣️</div><div class="rtext"><strong>"Double coming"</strong> — Alert for AI game: skip pass ready. Everyone be a target.<div class="rsub">Use the moment you see the AI's defender start leaving to help.</div></div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── SELECT & SWITCH ──
+window.selectPlay=function(id,btn){
+  animRunning=false;if(_raf){cancelAnimationFrame(_raf);_raf=null;}
+  currentPlayId=id;
+  document.querySelectorAll('.pbtn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  const play=[...plays5v5,...playsAI].find(p=>p.id===id);
+  if(!play)return;
+  if(currentTab==='5v5')renderPlay5v5(play);
+  else renderPlayAI(play);
+};
+
+window.switchTab=function(tab,btn){
+  animRunning=false;if(_raf){cancelAnimationFrame(_raf);_raf=null;}
+  currentTab=tab;
+  document.querySelectorAll('.tabbar button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(tab==='rules'){
+    currentPlayId=null;
+    renderSidebar();
+    renderRules();
+    return;
+  }
+  const list=tab==='5v5'?plays5v5:playsAI;
+  currentPlayId=list[0].id;
+  renderSidebar();
+  if(tab==='5v5')renderPlay5v5(list[0]);
+  else renderPlayAI(list[0]);
+};
+
+// Init
+currentPlayId=plays5v5[0].id;
+renderSidebar();
+renderPlay5v5(plays5v5[0]);
+</script>
+</body>
+</html>
