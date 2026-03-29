@@ -255,13 +255,47 @@ canvas{display:block;width:100%;max-width:600px;margin:0 auto;border-radius:3px;
 .fade-in{animation:fadeIn .3s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 
+/* ── TABLET ── */
+@media(max-width:900px){
+  .layout{grid-template-columns:200px 1fr;}
+  .content{padding:20px 18px 32px;}
+  .ai-scenario-grid{grid-template-columns:1fr;}
+}
+
+/* ── MOBILE ── */
 @media(max-width:680px){
+  header{padding:16px 16px 14px;}
+  header h1{font-size:28px;}
+  header .sub{font-size:11px;}
+  .statbar{display:none;} /* hide stat bar on small screens — saves space */
+  .tabbar{padding:0 8px;}
+  .tabbar button{padding:10px 10px;font-size:12px;letter-spacing:1px;}
+  .tabbar button .pill{display:none;}
   .layout{grid-template-columns:1fr;}
-  .sidebar{border-right:none;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;padding:8px 0;}
-  .pbtn{border-left:none;border-bottom:3px solid transparent;flex:1;min-width:120px;}
+  .sidebar{
+    border-right:none;border-bottom:1px solid var(--border);
+    display:flex;flex-wrap:wrap;padding:6px 0;
+    max-height:120px;overflow-y:auto;
+  }
+  .pbtn{border-left:none;border-bottom:3px solid transparent;flex:1;min-width:110px;padding:10px 10px;}
   .pbtn.active{border-bottom-color:var(--gold);border-left-color:transparent;}
-  .content{padding:18px 14px 32px;}
+  .pbtn .pnum{font-size:15px;width:20px;}
+  .pbtn .pn{font-size:11px;}
+  .pbtn .pt{display:none;}
+  .spill{display:none;}
+  .content{padding:14px 12px 32px;}
   .steps{grid-template-columns:1fr;}
+  .play-hdr{flex-direction:column;gap:10px;}
+  .play-hdr-left h2{font-size:26px;}
+  .animBtn{width:100%;text-align:center;}
+  .roles{gap:6px;}
+  .rchip{font-size:10px;padding:5px 10px;}
+  .court-wrap{padding:12px;}
+  .ai-scenario-grid{grid-template-columns:1fr;}
+  .ai-card{padding:14px;}
+  .sgroup-title{font-size:8px;}
+  .tips li{font-size:11px;}
+  .step .sact{font-size:11px;}
 }
 </style>
 </head>
@@ -900,6 +934,13 @@ const animFns = {
 function runAnim(animKey,canvas){
   if(_raf){cancelAnimationFrame(_raf);_raf=null;}
   _t=0;_running=true;
+  // Ensure canvas has real dimensions before animating
+  if(!canvas.width||canvas.width<10){
+    const rect=canvas.getBoundingClientRect();
+    const dpr=window.devicePixelRatio||1;
+    canvas.width=(rect.width||600)*dpr;
+    canvas.height=((rect.width||600)*380/600)*dpr;
+  }
   const ctx=canvas.getContext('2d');
   const W=canvas.width, H=canvas.height;
   const fn=animFns[animKey]; if(!fn)return;
@@ -947,19 +988,23 @@ function initCanvas(canvasId,positions){
 let currentTab='5v5';
 let currentPlayId=null;
 let animRunning=false;
+let currentAnimKey=null;
+let currentPositions=null;
 
 // ── TOGGLE ANIMATION ──
-window.toggleAnim=function(animKey,positions){
+window.toggleAnim=function(){
   const canvas=document.getElementById('cc');
   const btn=document.getElementById('ab');
-  if(!canvas)return;
+  if(!canvas||!currentAnimKey)return;
   if(!animRunning){
-    animRunning=true;btn.textContent='⏹ STOP';
-    runAnim(animKey,canvas);
+    animRunning=true;
+    if(btn)btn.textContent='⏹ STOP';
+    runAnim(currentAnimKey,canvas);
   }else{
-    animRunning=false;btn.textContent='▶ ANIMATE';
+    animRunning=false;
+    if(btn)btn.textContent='▶ ANIMATE';
     if(_raf){cancelAnimationFrame(_raf);_raf=null;}
-    drawStatic(positions,canvas);
+    if(currentPositions)drawStatic(currentPositions,canvas);
   }
 };
 
@@ -1005,6 +1050,8 @@ function renderPlay5v5(play){
     </div>`).join('');
   const tipsHTML=play.tips.map(t=>`<li>${t}</li>`).join('');
 
+  currentAnimKey=play.anim;
+  currentPositions=play.pos;
   document.getElementById('content').innerHTML=`<div class="fade-in">
     <div class="play-hdr">
       <div class="play-hdr-left">
@@ -1012,7 +1059,7 @@ function renderPlay5v5(play){
         <h2>${play.name}</h2>
         <div class="pdesc">${play.desc}</div>
       </div>
-      <button class="animBtn" id="ab" onclick="toggleAnim('${play.anim}',${JSON.stringify(play.pos)})">▶ ANIMATE</button>
+      <button class="animBtn" id="ab" onclick="toggleAnim()">▶ ANIMATE</button>
     </div>
     <div class="roles">${rolesHTML}</div>
     <div class="court-wrap">
@@ -1043,6 +1090,8 @@ function renderPlayAI(play){
       <div class="ac-play">📋 BEST PLAY: ${s.play}</div>
     </div>`).join('');
 
+  currentAnimKey=play.anim;
+  currentPositions=play.pos;
   document.getElementById('content').innerHTML=`<div class="fade-in">
     <div class="play-hdr">
       <div class="play-hdr-left">
@@ -1051,7 +1100,7 @@ function renderPlayAI(play){
         <div class="pdesc">${play.desc}</div>
         <div class="ai-badge">🤖 ${play.aiBadge}</div>
       </div>
-      <button class="animBtn" id="ab" onclick="toggleAnim('${play.anim}',${JSON.stringify(play.pos)})">▶ ANIMATE</button>
+      <button class="animBtn" id="ab" onclick="toggleAnim()">▶ ANIMATE</button>
     </div>
     <div class="roles">${rolesHTML}</div>
     <div class="court-wrap">
@@ -1065,6 +1114,7 @@ function renderPlayAI(play){
     <div class="ai-scenario-grid">${strategiesHTML}</div>
   </div>`;
   animRunning=false;
+  currentPositions=play.pos;
   initCanvas('cc',play.pos);
 }
 
