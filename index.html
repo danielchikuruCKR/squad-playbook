@@ -251,6 +251,21 @@ canvas{display:block;width:100%;max-width:600px;margin:0 auto;border-radius:3px;
 .rtext strong{color:var(--gold);}
 .rtext .rsub{color:var(--muted);font-size:11px;margin-top:2px;}
 
+/* ── PLAY NAV ── */
+.play-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 0;margin-top:4px;border-top:1px solid var(--border);
+}
+.nav-btn{
+  background:var(--panel2);border:1px solid var(--border);
+  color:var(--text);font-family:'Bebas Neue',sans-serif;
+  font-size:13px;letter-spacing:1.5px;padding:8px 18px;
+  cursor:pointer;border-radius:3px;transition:all .18s;
+}
+.nav-btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold);}
+.nav-btn:disabled{opacity:.3;cursor:default;}
+.nav-label{font-size:11px;color:var(--muted);letter-spacing:1px;}
+
 /* ── MISC ── */
 .fade-in{animation:fadeIn .3s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
@@ -312,8 +327,8 @@ canvas{display:block;width:100%;max-width:600px;margin:0 auto;border-radius:3px;
 <div class="statbar">
   <div class="si"><div class="sv">99</div><div class="sl">Pass Acc</div></div>
   <div class="si"><div class="sv">15+</div><div class="sl">AST Goal</div></div>
-  <div class="si"><div class="sv">11</div><div class="sl">Total Plays</div></div>
-  <div class="si"><div class="sv">5</div><div class="sl">AI Scenarios</div></div>
+  <div class="si"><div class="sv" id="stat-total">11</div><div class="sl">Total Plays</div></div>
+  <div class="si"><div class="sv" id="stat-ai">5</div><div class="sl">AI Scenarios</div></div>
   <div class="si"><div class="sv">🤖</div><div class="sl">AI Proof</div></div>
 </div>
 
@@ -1014,7 +1029,7 @@ function renderSidebar(){
   if(currentTab==='5v5'){
     sb.innerHTML=`<div class="sgroup"><div class="sgroup-title">5v5 Plays</div>`+
       plays5v5.map((p,i)=>`
-        <button class="pbtn${currentPlayId===p.id?' active':''}" onclick="selectPlay('${p.id}',this)">
+        <button class="pbtn${currentPlayId===p.id?' active':''}" data-play-id="${p.id}" onclick="selectPlay('${p.id}',this)">
           <div class="pnum">${String(i+1).padStart(2,'0')}</div>
           <div class="pi"><div class="pn">${p.name}</div><div class="pt">${p.tag.split('—')[1]?.trim()||''}</div></div>
           <span class="spill sp-5v5">5V5</span>
@@ -1022,16 +1037,33 @@ function renderSidebar(){
   } else if(currentTab==='ai'){
     sb.innerHTML=`<div class="sgroup"><div class="sgroup-title">AI Scenarios (4v5)</div>`+
       playsAI.map(p=>`
-        <button class="pbtn${currentPlayId===p.id?' active':''}" onclick="selectPlay('${p.id}',this)">
+        <button class="pbtn${currentPlayId===p.id?' active':''}" data-play-id="${p.id}" onclick="selectPlay('${p.id}',this)">
           <div class="pnum">🤖</div>
           <div class="pi"><div class="pn">${p.name}</div><div class="pt">${p.tag.split('—')[1]?.trim()||''}</div></div>
           <span class="spill sp-ai">AI</span>
         </button>`).join('')+`</div>`;
   } else {
     sb.innerHTML=`<div class="sgroup"><div class="sgroup-title">Rules</div>
-      <button class="pbtn active"><div class="pnum">📖</div><div class="pi"><div class="pn">System Rules</div><div class="pt">Read this first</div></div></div>
+      <button class="pbtn active"><div class="pnum">📖</div><div class="pi"><div class="pn">System Rules</div><div class="pt">Read this first</div></div></button>
     </div>`;
   }
+}
+
+// ── NAV HELPER ──
+window.navPlay=function(dir){
+  const list=currentTab==='5v5'?plays5v5:playsAI;
+  const idx=list.findIndex(p=>p.id===currentPlayId);
+  const next=idx+dir;
+  if(next>=0&&next<list.length)selectPlay(list[next].id,null);
+};
+
+function makePlayNav(list,play){
+  const idx=list.findIndex(p=>p.id===play.id);
+  return `<div class="play-nav">
+    <button class="nav-btn" onclick="navPlay(-1)"${idx===0?' disabled':''}>← PREV</button>
+    <span class="nav-label">${String(idx+1).padStart(2,'0')} / ${list.length}</span>
+    <button class="nav-btn" onclick="navPlay(1)"${idx===list.length-1?' disabled':''}>NEXT →</button>
+  </div>`;
 }
 
 // ── RENDER PLAY ──
@@ -1068,6 +1100,7 @@ function renderPlay5v5(play){
     </div>
     <div class="steps">${stepsHTML}</div>
     <div class="tips"><h3>🧠 Daniel's Notes</h3><ul>${tipsHTML}</ul></div>
+    ${makePlayNav(plays5v5,play)}
   </div>`;
   animRunning=false;
   initCanvas('cc',play.pos);
@@ -1086,7 +1119,7 @@ function renderPlayAI(play){
     <div class="ai-card">
       <h3>${s.title}</h3>
       <div class="ac-sub">${s.sub}</div>
-      <ul>${s.points.map(p=>`<li><strong></strong>${p}</li>`).join('')}</ul>
+      <ul>${s.points.map(p=>`<li>${p}</li>`).join('')}</ul>
       <div class="ac-play">📋 BEST PLAY: ${s.play}</div>
     </div>`).join('');
 
@@ -1112,6 +1145,7 @@ function renderPlayAI(play){
       <ul>${warningsHTML}</ul>
     </div>
     <div class="ai-scenario-grid">${strategiesHTML}</div>
+    ${makePlayNav(playsAI,play)}
   </div>`;
   animRunning=false;
   currentPositions=play.pos;
@@ -1164,7 +1198,8 @@ window.selectPlay=function(id,btn){
   animRunning=false;if(_raf){cancelAnimationFrame(_raf);_raf=null;}
   currentPlayId=id;
   document.querySelectorAll('.pbtn').forEach(b=>b.classList.remove('active'));
-  if(btn)btn.classList.add('active');
+  if(!btn)btn=document.querySelector(`.pbtn[data-play-id="${id}"]`);
+  if(btn){btn.classList.add('active');btn.scrollIntoView({block:'nearest',behavior:'smooth'});}
   const play=[...plays5v5,...playsAI].find(p=>p.id===id);
   if(!play)return;
   if(currentTab==='5v5')renderPlay5v5(play);
@@ -1188,6 +1223,20 @@ window.switchTab=function(tab,btn){
   if(tab==='5v5')renderPlay5v5(list[0]);
   else renderPlayAI(list[0]);
 };
+
+// ── DYNAMIC STAT BAR ──
+document.getElementById('stat-total').textContent=plays5v5.length+playsAI.length;
+document.getElementById('stat-ai').textContent=playsAI.length;
+
+// ── KEYBOARD NAV ──
+document.addEventListener('keydown',function(e){
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  const list=currentTab==='5v5'?plays5v5:currentTab==='ai'?playsAI:[];
+  if(!list.length||!currentPlayId)return;
+  const idx=list.findIndex(p=>p.id===currentPlayId);
+  if(e.key==='ArrowRight'&&idx<list.length-1){e.preventDefault();selectPlay(list[idx+1].id,null);}
+  else if(e.key==='ArrowLeft'&&idx>0){e.preventDefault();selectPlay(list[idx-1].id,null);}
+});
 
 // Init
 currentPlayId=plays5v5[0].id;
